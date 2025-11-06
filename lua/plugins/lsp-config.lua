@@ -16,30 +16,31 @@ return {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local lspconfig = require("lspconfig")
-
-      -- Keymaps for LSP features
+      -- Helper for LSP keymaps
       local on_attach = function(_, bufnr)
-        local opts = {buffer = bufnr }
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+        local opts = { buffer = bufnr }
+        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
       end
 
-      -- Setup Lua LSP
-      lspconfig.lua_ls.setup({
+      -- New way to configure servers in Neovim 0.11+
+      vim.lsp.config["lua_ls"] = {
         on_attach = on_attach,
         settings = {
           Lua = {
-            diagnostics = { globals = { 'vim' } },
+            diagnostics = { globals = { "vim" } },
           },
         },
-      })
+     }
 
-      -- Setup
-      lspconfig.jdtls.setup({
-        on_attach = on_attach
-      })
-    end
+    vim.lsp.config["jdtls"] = {
+      on_attach = on_attach,
+    }
+
+    -- Actually start/attach the servers
+    vim.lsp.enable("lua_ls")
+    vim.lsp.enable("jdtls")
+  end,
   }
 }
